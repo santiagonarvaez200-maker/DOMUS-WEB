@@ -32,12 +32,12 @@
     var escenaM = lienzoMueble.parentElement, pistaM = escenaM.querySelector('.pista');
     var rango = document.getElementById('ancho'), salida = document.getElementById('ancho-valor');
     var resumen = document.getElementById('resumen'), cotizar = document.getElementById('cotizar-medida');
-    var NOMBRES = { natural: 'madera natural', cafe: 'café', oliva: 'pintado oliva', crema: 'lacado crema' };
-    var acabado = 'natural';
+    var elegido = document.querySelector('[data-acabado][aria-pressed="true"]'), acabado = elegido ? elegido.dataset.acabado : 'caramelo';
+    var nombreDe = function (k) { return hay3D && Domus3D.ACABADOS[k] ? Domus3D.ACABADOS[k].nombre : 'melamina ' + k; };
     var mueble = hay3D && Domus3D.aparador(lienzoMueble, { ancho: +rango.value, acabado: acabado, zona: escenaM, sombra: escenaM.querySelector('.sombra'), alTocar: function () { ocultar(pistaM); } });
     if (!mueble) respaldo(lienzoMueble, escenaM);
     var actualizar = function () {
-      var ancho = +rango.value, nombre = NOMBRES[acabado];
+      var ancho = +rango.value, nombre = nombreDe(acabado);
       salida.textContent = ancho + ' cm';
       rango.style.setProperty('--lleno', ((ancho - rango.min) / (rango.max - rango.min) * 100) + '%');
       resumen.textContent = 'Aparador de ' + ancho + ' × 85 × 45 cm, ' + nombre;

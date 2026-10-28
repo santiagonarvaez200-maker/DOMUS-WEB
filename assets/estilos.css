@@ -551,3 +551,42 @@ fieldset { border: 0; margin: 0; padding: 0; }
   .escena-modular { position: relative; top: 0; aspect-ratio: auto; height: min(30vh, 230px); max-height: none; border-radius: 22px; }
   .escena-modular .pista { left: 14px; bottom: 12px; }
 }
+
+/* Isotipos de las bandas: escena de línea y un pájaro carpintero que llega a posarse */
+.banda.con-isotipo .banda-lado { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 20px; align-self: stretch; }
+.isotipo { width: clamp(260px, 30vw, 420px); }
+.isotipo svg { display: block; width: 100%; height: auto; overflow: visible; }
+.isotipo .trazo { fill: none; stroke: var(--crema); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.isotipo .punteado { stroke-dasharray: .03 .03; opacity: .45; }
+.isotipo .cajon { stroke: var(--arena); }
+.isotipo .ladrillo { fill: var(--arena); opacity: .85; }
+.isotipo .madera { fill: rgba(227, 205, 176, .16); }
+.isotipo .madera.menta { fill: rgba(82, 210, 137, .2); }
+.isotipo .acento, .isotipo .destello { fill: var(--menta); }
+.isotipo .destello { transform-box: fill-box; transform-origin: center; }
+.isotipo .ave-cuerpo { fill: var(--crema); }
+.isotipo .ave-ala-fondo, .isotipo .ave-cola { fill: var(--arena); }
+.isotipo .ave-pico { fill: var(--arena); }
+.isotipo .ave-cresta { fill: var(--menta); }
+.isotipo .ave-linea { fill: none; stroke: var(--tinta); stroke-width: 1.6; stroke-linecap: round; }
+.isotipo .ave-patas { fill: none; stroke: var(--arena); stroke-width: 2; stroke-linecap: round; }
+.isotipo .ave-ojo { fill: var(--tinta); transform-box: fill-box; transform-origin: center; }
+/* Antes de verse (solo con JavaScript): líneas sin dibujar, ladrillos arriba y el ave fuera */
+.isotipo.espera .trazo:not(.punteado) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.isotipo.espera .punteado, .isotipo.espera .acento { opacity: 0; }
+.isotipo.espera .ladrillo { opacity: 0; transform: translateY(-8px); }
+.isotipo.espera .destello { opacity: 0; transform: scale(0); }
+.isotipo.espera .ave { visibility: hidden; }
+.isotipo.vivo .trazo:not(.punteado) { stroke-dashoffset: 0; transition: stroke-dashoffset .9s var(--curva); }
+.isotipo.vivo .punteado { opacity: .45; transition: opacity .6s .5s; }
+.isotipo.vivo .acento { opacity: 1; transition: opacity .4s .7s; }
+.isotipo.vivo .ladrillo { opacity: .85; transform: none; transition: opacity .2s, transform .35s var(--rebote); transition-delay: calc(var(--i) * 14ms); }
+.isotipo.posado .destello { animation: destello 1.1s var(--curva) both; }
+.isotipo.posado .destello:nth-child(2) { animation-delay: .15s; }
+.isotipo.posado .destello:nth-child(3) { animation-delay: .3s; }
+.isotipo.posado .destello:nth-child(4) { animation-delay: .45s; }
+@keyframes destello { 0% { opacity: 0; transform: scale(0) rotate(0deg); } 55% { opacity: 1; transform: scale(1.35) rotate(45deg); } 100% { opacity: 1; transform: scale(1) rotate(90deg); } }
+@media (max-width: 920px) {
+  .banda.con-isotipo .banda-lado { align-items: stretch; }
+  .isotipo { width: min(100%, 360px); align-self: center; }
+}

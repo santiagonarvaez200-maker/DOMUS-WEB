@@ -554,7 +554,7 @@ fieldset { border: 0; margin: 0; padding: 0; }
 
 /* Isotipos de las bandas: escena de línea y un pájaro carpintero que llega a posarse */
 .banda.con-isotipo .banda-lado { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 20px; align-self: stretch; }
-.isotipo { width: clamp(260px, 30vw, 420px); }
+.isotipo { width: clamp(300px, 42vw, 580px); }
 .isotipo svg { display: block; width: 100%; height: auto; overflow: visible; }
 .isotipo .trazo { fill: none; stroke: var(--crema); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .isotipo .punteado { stroke-dasharray: .03 .03; opacity: .45; }
@@ -564,13 +564,9 @@ fieldset { border: 0; margin: 0; padding: 0; }
 .isotipo .madera.menta { fill: rgba(82, 210, 137, .2); }
 .isotipo .acento, .isotipo .destello { fill: var(--menta); }
 .isotipo .destello { transform-box: fill-box; transform-origin: center; }
-.isotipo .ave-cuerpo { fill: var(--crema); }
-.isotipo .ave-ala-fondo, .isotipo .ave-cola { fill: var(--arena); }
-.isotipo .ave-pico { fill: var(--arena); }
-.isotipo .ave-cresta { fill: var(--menta); }
-.isotipo .ave-linea { fill: none; stroke: var(--tinta); stroke-width: 1.6; stroke-linecap: round; }
-.isotipo .ave-patas { fill: none; stroke: var(--arena); stroke-width: 2; stroke-linecap: round; }
-.isotipo .ave-ojo { fill: var(--tinta); transform-box: fill-box; transform-origin: center; }
+.isotipo .ave-cuerpo, .isotipo .ave-ala { fill: var(--tinta); stroke: var(--crema); stroke-width: 4.6; stroke-linejoin: round; stroke-linecap: round; }
+.isotipo .ave-patas { fill: none; stroke: var(--crema); stroke-width: 4.6; stroke-linecap: round; }
+.isotipo .ave-ojo { fill: var(--crema); transform-box: fill-box; transform-origin: center; }
 /* Antes de verse (solo con JavaScript): líneas sin dibujar, ladrillos arriba y el ave fuera */
 .isotipo.espera .trazo:not(.punteado) { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .isotipo.espera .punteado, .isotipo.espera .acento { opacity: 0; }
@@ -588,5 +584,5 @@ fieldset { border: 0; margin: 0; padding: 0; }
 @keyframes destello { 0% { opacity: 0; transform: scale(0) rotate(0deg); } 55% { opacity: 1; transform: scale(1.35) rotate(45deg); } 100% { opacity: 1; transform: scale(1) rotate(90deg); } }
 @media (max-width: 920px) {
   .banda.con-isotipo .banda-lado { align-items: stretch; }
-  .isotipo { width: min(100%, 360px); align-self: center; }
+  .isotipo { width: min(100%, 440px); align-self: center; }
 }

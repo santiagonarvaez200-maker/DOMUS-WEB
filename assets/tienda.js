@@ -14,10 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
   var esEjemplo = false;
 
   var EJEMPLOS = [
-    { Codigo: "R-001", Nombre: "Cómoda de cuatro cajones", Categoria: "Habitaciones", Descripcion: "Restaurada con laca mate y herrajes nuevos.", Medidas: "90 × 45 × 85 cm", Madera: "Cedro", Estado: "Disponible", Precio: "650000" },
-    { Codigo: "R-002", Nombre: "Comedor de cuatro puestos", Categoria: "Comedor", Descripcion: "Mesa lijada y barnizada, sillas reforzadas.", Medidas: "120 × 80 × 76 cm", Madera: "Pino", Estado: "Apartado", Precio: "980000" },
-    { Codigo: "R-003", Nombre: "Biblioteca abierta", Categoria: "Salas", Descripcion: "Pintada en verde salvia, con repisas reforzadas.", Medidas: "80 × 30 × 180 cm", Madera: "Pino", Estado: "Disponible", Precio: "420000" },
-    { Codigo: "R-004", Nombre: "Mesa de noche", Categoria: "Habitaciones", Descripcion: "Cajón ajustado y acabado natural.", Medidas: "45 × 40 × 55 cm", Madera: "Roble", Estado: "Vendido", Precio: "210000" }
+    { Codigo: "R-001", Nombre: "Cómoda de cuatro cajones", Categoria: "Habitaciones", Descripcion: "Restaurada con laca mate y herrajes nuevos.", Medidas: "90 × 45 × 85 cm", Madera: "Cedro", Estado: "Disponible", Precio: "650000", Foto1: "assets/fotos/comoda.jpg" },
+    { Codigo: "R-002", Nombre: "Comedor de cuatro puestos", Categoria: "Comedor", Descripcion: "Mesa lijada y barnizada, sillas reforzadas.", Medidas: "120 × 80 × 76 cm", Madera: "Pino", Estado: "Apartado", Precio: "980000", Foto1: "assets/fotos/comedor-ejemplo.jpg" },
+    { Codigo: "R-003", Nombre: "Biblioteca abierta", Categoria: "Salas", Descripcion: "Pintada en verde salvia, con repisas reforzadas.", Medidas: "80 × 30 × 180 cm", Madera: "Pino", Estado: "Disponible", Precio: "420000", Foto1: "assets/fotos/biblioteca.jpg" },
+    { Codigo: "R-004", Nombre: "Mesa de noche", Categoria: "Habitaciones", Descripcion: "Cajón ajustado y acabado natural.", Medidas: "45 × 40 × 55 cm", Madera: "Roble", Estado: "Vendido", Precio: "210000", Foto1: "assets/fotos/mesa-de-noche.jpg" }
   ];
 
   function limpio(v) { return String(v == null ? "" : v).trim(); }

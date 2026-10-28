@@ -42,7 +42,14 @@
     cafe:    { nombre: 'café', claro: '#6E4A33', oscuro: '#2E1C10', espec: 0.30, brillo: 48 },
     oliva:   { nombre: 'pintado oliva', claro: '#5A6932', oscuro: '#4B582A', espec: 0.42, brillo: 70 },
     crema:   { nombre: 'lacado crema', claro: '#EDEBDC', oscuro: '#DAD6C2', espec: 0.40, brillo: 64 },
-    gastado: { nombre: 'madera gastada', claro: '#A3998A', oscuro: '#6A6052', espec: 0.04, brillo: 8 }
+    gastado: { nombre: 'madera gastada', claro: '#A3998A', oscuro: '#6A6052', espec: 0.04, brillo: 8 },
+    /* Melaminas: veta impresa más suave y brillo satinado. herraje es el tono de las manijas. */
+    blanco:   { nombre: 'melamina blanca', claro: '#EFEEE8', oscuro: '#E4E2DA', espec: 0.30, brillo: 44, herraje: '#2B2620' },
+    venecia:  { nombre: 'melamina venecia', claro: '#DCC4A0', oscuro: '#BFA27A', espec: 0.24, brillo: 40, herraje: '#2B2620' },
+    cenizo:   { nombre: 'melamina cenizo', claro: '#B3AC9F', oscuro: '#8E877A', espec: 0.24, brillo: 40, herraje: '#2B2620' },
+    caramelo: { nombre: 'melamina caramelo', claro: '#C28A52', oscuro: '#94602F', espec: 0.24, brillo: 40, herraje: '#2B2620' },
+    nogal:    { nombre: 'melamina nogal', claro: '#7E573A', oscuro: '#563823', espec: 0.24, brillo: 40, herraje: '#C9C2B0' },
+    wengue:   { nombre: 'melamina wengué', claro: '#4E3A2D', oscuro: '#2E2016', espec: 0.24, brillo: 40, herraje: '#C9C2B0' }
   };
   function material(clave, extra) {
     var a = ACABADOS[clave] || ACABADOS.natural, m = { claro: lineal(a.claro), oscuro: lineal(a.oscuro), espec: a.espec, brillo: a.brillo, dir: [1, 0], semilla: 0 };
@@ -116,6 +123,20 @@
   function Geo() { this.pos = []; this.nor = []; this.ind = []; }
   Geo.prototype.v = function (x, y, z, nx, ny, nz) { this.pos.push(x, y, z); this.nor.push(nx, ny, nz); return this.pos.length / 3 - 1; };
   Geo.prototype.quad = function (a, b, c, d) { this.ind.push(a, b, c, a, c, d); };
+
+  /* Ensancha el contorno hacia afuera: la pieza se ve más gruesa sin cambiar su forma. */
+  function engrosar(pts, d) {
+    var n = pts.length, en = [], i;
+    for (i = 0; i < n; i++) {
+      var a = pts[i], b = pts[(i + 1) % n], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+      en.push([dy / l, -dx / l]);
+    }
+    return pts.map(function (p, i) {
+      var e0 = en[(i - 1 + n) % n], e1 = en[i], x = e0[0] + e1[0], y = e0[1] + e1[1], ll = Math.hypot(x, y);
+      var v = ll < 1e-4 ? e1 : [x / ll, y / ll], k = Math.min(2, 1 / Math.max(0.5, (v[0] * e1[0] + v[1] * e1[1])));
+      return [p[0] + v[0] * d * k, p[1] + v[1] * d * k];
+    });
+  }
 
   /* Pieza plana extruida con un chaflán pequeño en los bordes, como madera lijada. */
   function extruir(pts, prof, ch) {
@@ -349,7 +370,8 @@
     ];
     piezas.forEach(function (p) {
       var t = TRAZOS[p.id];
-      p.malla = L.malla(extruir(muestrear(t.ini, t.seg, t.n, 280, 445, 612), 0.3, p.ojo ? 0.012 : 0.022));
+      var contorno = muestrear(t.ini, t.seg, t.n, 280, 445, 612);
+      p.malla = L.malla(extruir(p.ojo ? engrosar(contorno, 0.012) : engrosar(contorno, 0.05), 0.62, p.ojo ? 0.02 : 0.04));
     });
     var ctl, arrancar = bucle(zona, paso);
     ctl = control(canvas, zona, arrancar, op.alTocar);
@@ -399,7 +421,7 @@
     if (!L) return null;
     var zona = op.zona || canvas.parentElement, sombra = op.sombra || null;
     var U = 1 / 60; /* 60 cm = 1 unidad */
-    var estado = { ancho: op.ancho || 160, acabado: op.acabado || 'natural', cambio: -1, anterior: op.ancho || 160 };
+    var estado = { ancho: op.ancho || 160, acabado: op.acabado || 'caramelo', cambio: -1, anterior: op.ancho || 160 };
     var mallas = {};
     function construir(anchoCm) {
       var W = anchoCm * U, H = 85 * U, D = 45 * U, pata = 12 * U, tabla = 1.8 * U, holg = 0.35 * U;
@@ -436,7 +458,7 @@
       escalaX = estado.cambio < 0 || reducir ? 1 : (estado.anterior + (estado.ancho - estado.anterior) * suaveAtras(t)) / estado.ancho;
       var grupo = M.serie(M.RX(0.2 + ctl.inclX), M.RY(-0.55 + ctl.inclY + ctl.giro));
       var mod = M.mul(grupo, (function () { var m = M.I(); m[0] = escalaX; return m; })());
-      var base = estado.acabado, madera = material(base), metal = solido(base === 'natural' ? '#2B2620' : '#C9C2B0', 0.6, 90);
+      var base = estado.acabado, madera = material(base), metal = solido((ACABADOS[base] || {}).herraje || (base === 'natural' ? '#2B2620' : '#C9C2B0'), 0.6, 90);
       L.limpiar();
       madera.dir = [0, 1]; madera.semilla = 0.2; L.dibujar(mallas.cuerpo, mod, madera);
       var tapa = material(base, { dir: [1, 0], semilla: 0.55 }); L.dibujar(mallas.tapa, mod, tapa);
@@ -533,6 +555,91 @@
     return { progreso: function (v) { prog = lim(v); if (!pendiente) { pendiente = true; global.requestAnimationFrame(dibujar); } } };
   }
 
+
+  /* ---------- Cubo modular: 10 bloques de madera que se reacomodan en muebles sencillos ----------
+     Cada forma es una lista de tablas [cx, cy, cz, ancho, alto, fondo]. Los bloques que sobran se encogen. */
+  var B = 0.5, G = 0.265;
+  var CUBO = [[-G, -G, -G], [G, -G, -G], [-G, -G, G], [G, -G, G], [-G, G, -G], [G, G, -G], [-G, G, G], [G, G, G]].map(function (c) { return [c[0], c[1], c[2], B, B, B]; });
+  function patas(x, y, z, h, s) { return [[-x, y, -z, s, h, s], [x, y, -z, s, h, s], [-x, y, z, s, h, s], [x, y, z, s, h, s]]; }
+  var FORMAS = {
+    taburete: [[0, -0.06, 0, 0.72, 0.06, 0.72]].concat(patas(0.29, -0.34, 0.29, 0.5, 0.06), [[0, -0.42, 0.29, 0.52, 0.04, 0.04], [0, -0.42, -0.29, 0.52, 0.04, 0.04]]),
+    mesaNoche: [[0, 0.21, 0, 0.72, 0.05, 0.56], [-0.34, -0.11, 0, 0.04, 0.6, 0.54], [0.34, -0.11, 0, 0.04, 0.6, 0.54], [0, -0.4, 0, 0.64, 0.04, 0.54],
+      [0, 0.06, 0.28, 0.66, 0.22, 0.03], [0, -0.24, 0.28, 0.66, 0.32, 0.03]].concat(patas(0.3, -0.51, 0.22, 0.18, 0.05)),
+    estante: [[-0.4, 0, 0, 0.04, 1.2, 0.36], [0.4, 0, 0, 0.04, 1.2, 0.36], [0, -0.56, 0, 0.76, 0.04, 0.36], [0, -0.18, 0, 0.76, 0.04, 0.36], [0, 0.2, 0, 0.76, 0.04, 0.36], [0, 0.58, 0, 0.84, 0.04, 0.38], [0, 0, -0.17, 0.76, 1.16, 0.02]],
+    mesa: [[0, 0.06, 0, 1.3, 0.06, 0.74]].concat(patas(0.57, -0.27, 0.3, 0.6, 0.07), [[0, -0.01, 0.3, 1.08, 0.09, 0.03], [0, -0.01, -0.3, 1.08, 0.09, 0.03]]),
+    silla: [[0, -0.12, 0, 0.54, 0.05, 0.52], [-0.23, -0.37, 0.22, 0.05, 0.46, 0.05], [0.23, -0.37, 0.22, 0.05, 0.46, 0.05], [-0.23, 0, -0.23, 0.05, 1.2, 0.05], [0.23, 0, -0.23, 0.05, 1.2, 0.05],
+      [0, 0.48, -0.23, 0.42, 0.12, 0.03], [0, 0.25, -0.23, 0.42, 0.08, 0.03], [0, -0.45, 0, 0.42, 0.04, 0.04]],
+    escritorio: [[0, 0.16, 0, 1.36, 0.05, 0.62], [-0.64, -0.22, 0, 0.04, 0.72, 0.58], [0.64, -0.22, 0, 0.04, 0.72, 0.58], [0.24, -0.22, 0, 0.04, 0.72, 0.58],
+      [0.44, 0.02, 0.28, 0.36, 0.2, 0.03], [0.44, -0.3, 0.28, 0.36, 0.4, 0.03], [-0.2, -0.02, -0.27, 0.84, 0.3, 0.03]],
+    banca: [[0, -0.14, 0, 1.36, 0.06, 0.42], [-0.58, -0.38, 0, 0.06, 0.44, 0.38], [0.58, -0.38, 0, 0.06, 0.44, 0.38], [0, -0.46, 0, 1.1, 0.06, 0.06]],
+    armario: [[-0.36, 0, 0, 0.04, 1.2, 0.52], [0.36, 0, 0, 0.04, 1.2, 0.52], [0, 0.58, 0, 0.68, 0.04, 0.52], [0, -0.5, 0, 0.68, 0.04, 0.52], [0, 0.02, -0.25, 0.68, 1.12, 0.02],
+      [-0.175, 0.04, 0.275, 0.34, 1.06, 0.03], [0.175, 0.04, 0.275, 0.34, 1.06, 0.03], [-0.03, 0.06, 0.295, 0.02, 0.2, 0.02], [0.03, 0.06, 0.295, 0.02, 0.2, 0.02], [0, -0.56, 0, 0.68, 0.08, 0.48]]
+  };
+  var ORDEN = ['taburete', 'mesaNoche', 'estante', 'mesa', 'silla', 'escritorio', 'banca', 'armario'];
+  var NOMBRES_FORMA = { taburete: 'Taburete', mesaNoche: 'Mesa de noche', estante: 'Estantería', mesa: 'Mesa', silla: 'Silla', escritorio: 'Escritorio', banca: 'Banca', armario: 'Armario' };
+  var BLOQUES = 10;
+  function completar(lista) {
+    var r = lista.slice(0, BLOQUES);
+    while (r.length < BLOQUES) r.push([0, -0.1, 0, 0, 0, 0]);
+    return r;
+  }
+
+  function modular(canvas, op) {
+    op = op || {};
+    var L = Lienzo(canvas);
+    if (!L) return null;
+    var zona = op.zona || canvas.parentElement, sombra = op.sombra || null;
+    var cubo = completar(CUBO);
+    var bloques = cubo.map(function (c, i) { return { desde: c.slice(), hacia: c.slice(), ahora: c.slice(), malla: null, semilla: (i * 0.37) % 1 }; });
+    var estado = { cambio: -1 };
+    var ctl, arrancar = bucle(zona, paso);
+    ctl = control(canvas, zona, arrancar, op.alTocar);
+    function medir() { L.medir(30, op.distancia || 4.7, 1.0, 0.0); }
+    function paso(ahora, dt) {
+      var moviendo = ctl.paso(dt), t = estado.cambio < 0 || reducir ? 99 : (ahora - estado.cambio) / 1000, activo = false;
+      var grupo = M.serie(M.RX(0.38 + ctl.inclX), M.RY(-0.62 + ctl.inclY + ctl.giro));
+      L.limpiar();
+      bloques.forEach(function (b, i) {
+        var a = lim((t - i * 0.045) / 0.85), f = suaveAtras(a), q;
+        if (a < 1) activo = true;
+        for (var k = 0; k < 6; k++) {
+          q = b.desde[k] + (b.hacia[k] - b.desde[k]) * f;
+          b.ahora[k] = k > 2 ? Math.max(0, q) : q;
+        }
+        var c = b.ahora;
+        if (c[3] < 0.002 || c[4] < 0.002 || c[5] < 0.002) return;
+        /* en pleno cambio, cada bloque sube un poco y gira, como si se acomodara a mano */
+        var salto = Math.sin(Math.PI * a) * 0.12, giro = Math.sin(Math.PI * a) * 0.35 * (i % 2 ? 1 : -1);
+        b.malla = L.malla(caja(new Geo(), -c[3] / 2, -c[4] / 2, -c[5] / 2, c[3] / 2, c[4] / 2, c[5] / 2), b.malla);
+        var m = M.mul(grupo, M.serie(M.T(c[0], c[1] + salto, c[2]), M.RY(giro)));
+        L.dibujar(b.malla, m, material(op.acabado || 'natural', { dir: c[4] > c[3] ? [0, 1] : [1, 0], semilla: b.semilla }));
+      });
+      if (sombra) {
+        var x0 = 0, x1 = 0;
+        bloques.forEach(function (b) { var c = b.ahora; if (c[3] > 0.002) { x0 = Math.min(x0, c[0] - c[3] / 2); x1 = Math.max(x1, c[0] + c[3] / 2); } });
+        sombra.style.width = Math.min(90, 26 + (x1 - x0) * 34).toFixed(1) + '%';
+      }
+      return moviendo || activo;
+    }
+    if ('ResizeObserver' in global) new ResizeObserver(function () { medir(); arrancar(); }).observe(canvas);
+    global.addEventListener('resize', function () { medir(); arrancar(); });
+    medir(); arrancar();
+    return {
+      /* i: posición de la pregunta (0..7); -1 vuelve al cubo. Devuelve el nombre del mueble. */
+      forma: function (i) {
+        var clave = i >= 0 ? ORDEN[i % ORDEN.length] : null, meta = clave ? completar(FORMAS[clave]) : cubo;
+        bloques.forEach(function (b, k) {
+          b.desde = b.ahora.slice(); b.hacia = meta[k].slice();
+          /* un bloque que aparece nace en su sitio, sin volar desde el centro */
+          if (b.desde[3] < 0.002) { b.desde = [b.hacia[0], b.hacia[1], b.hacia[2], 0, 0, 0]; }
+          if (b.hacia[3] < 0.002) { b.hacia = [b.desde[0], b.desde[1], b.desde[2], 0, 0, 0]; }
+        });
+        estado.cambio = performance.now(); arrancar();
+        return clave ? NOMBRES_FORMA[clave] : 'Cubo modular';
+      }
+    };
+  }
+
   /* Ilustración fija de un aparador (para el antes y después): devuelve una imagen PNG */
   function foto(op) {
     op = op || {};
@@ -560,7 +667,7 @@
   }
 
   global.Domus3D = {
-    reducir: reducir, logo: logo, aparador: aparador, despiece: despiece, foto: foto, ACABADOS: ACABADOS,
+    reducir: reducir, logo: logo, aparador: aparador, despiece: despiece, foto: foto, modular: modular, ACABADOS: ACABADOS,
     Lienzo: Lienzo, bucle: bucle, control: control, material: material, solido: solido, M: M,
     geo: { Geo: Geo, caja: caja, extruir: extruir, muestrear: muestrear }
   };

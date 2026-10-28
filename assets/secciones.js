@@ -33,6 +33,31 @@
     }
   }
 
+  /* ---------- Cubo modular de las preguntas: cada pregunta abierta lo vuelve un mueble ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-modular]'), function (escena) {
+    var lienzo = escena.querySelector('canvas'), pista = escena.querySelector('.pista'), nombre = escena.querySelector('.nombre-forma');
+    var bloque = escena.closest('section'), preguntas = bloque ? bloque.querySelectorAll('details.desplegable') : [];
+    var cubo = hay3D && Domus3D.modular(lienzo, { zona: escena, sombra: escena.querySelector('.sombra'), acabado: 'natural', alTocar: function () { if (pista) pista.classList.add('oculta'); } });
+    if (!cubo) {
+      lienzo.hidden = true;
+      if (pista) pista.hidden = true;
+      escena.querySelector('.respaldo').removeAttribute('hidden');
+      return;
+    }
+    var ultima = -1;
+    Array.prototype.forEach.call(preguntas, function (d, i) {
+      d.addEventListener('toggle', function () {
+        var abierta = -1;
+        if (d.open) abierta = i;
+        else Array.prototype.forEach.call(preguntas, function (o, k) { if (o.open) abierta = k; });
+        if (abierta === ultima) return;
+        ultima = abierta;
+        nombre.textContent = cubo.forma(abierta);
+        if (pista) pista.classList.add('oculta');
+      });
+    });
+  });
+
   /* ---------- Antes y después ---------- */
   Array.prototype.forEach.call(document.querySelectorAll('[data-comparar]'), function (c) {
     var rango = c.querySelector('input[type=range]');

@@ -1,4 +1,4 @@
-/* Domus · isotipos de las bandas: la escena se dibuja al aparecer y el ave del logo llega a posarse.
+/* Domus · isotipos de las bandas: la escena se dibuja al aparecer y el pájaro carpintero llega a posarse.
    Sin JavaScript o con "reducir movimiento" se ve la escena completa con el ave ya posada. */
 (function () {
   'use strict';
@@ -12,13 +12,13 @@
   Array.prototype.forEach.call(escenas, function (iso) {
     var ave = iso.querySelector('.ave'), ala = iso.querySelector('.ave-ala'), ojo = iso.querySelector('.ave-ojo');
     if (!ave) return;
-    var x = +ave.dataset.x, y = +ave.dataset.y, s = +ave.dataset.s;
+    var x = +ave.dataset.x, y = +ave.dataset.y, s = +ave.dataset.s, pivote = (ave.dataset.pivote || '0 0').split(' ');
     var ocupado = false;
     iso.classList.add('espera');
 
     function poner(px, py, giro, alaGrados, escY) {
       ave.setAttribute('transform', 'translate(' + px.toFixed(2) + ' ' + py.toFixed(2) + ') rotate(' + giro.toFixed(2) + ') scale(' + s + ' ' + (s * escY).toFixed(4) + ')');
-      ala.setAttribute('transform', 'rotate(' + alaGrados.toFixed(2) + ' 760 582)');
+      ala.setAttribute('transform', 'rotate(' + (-Math.abs(alaGrados)).toFixed(2) + ' ' + pivote[0] + ' ' + pivote[1] + ')');
     }
     function parpadear() {
       if (!ojo.animate) return;

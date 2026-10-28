@@ -552,7 +552,7 @@ fieldset { border: 0; margin: 0; padding: 0; }
   .escena-modular .pista { left: 14px; bottom: 12px; }
 }
 
-/* Isotipos de las bandas: escena de línea y el ave del logo que llega a posarse */
+/* Isotipos de las bandas: escena de línea y un pájaro carpintero que llega a posarse */
 .banda.con-isotipo .banda-lado { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 20px; align-self: stretch; }
 .isotipo { width: clamp(260px, 30vw, 420px); }
 .isotipo svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -564,8 +564,13 @@ fieldset { border: 0; margin: 0; padding: 0; }
 .isotipo .madera.menta { fill: rgba(82, 210, 137, .2); }
 .isotipo .acento, .isotipo .destello { fill: var(--menta); }
 .isotipo .destello { transform-box: fill-box; transform-origin: center; }
-.isotipo .ave-cuerpo, .isotipo .ave-ala { fill: var(--crema); }
-.isotipo .ave-ojo { fill: var(--menta); transform-box: fill-box; transform-origin: center; }
+.isotipo .ave-cuerpo { fill: var(--crema); }
+.isotipo .ave-ala-fondo, .isotipo .ave-cola { fill: var(--arena); }
+.isotipo .ave-pico { fill: var(--arena); }
+.isotipo .ave-cresta { fill: var(--menta); }
+.isotipo .ave-linea { fill: none; stroke: var(--tinta); stroke-width: 1.6; stroke-linecap: round; }
+.isotipo .ave-patas { fill: none; stroke: var(--arena); stroke-width: 2; stroke-linecap: round; }
+.isotipo .ave-ojo { fill: var(--tinta); transform-box: fill-box; transform-origin: center; }
 /* Antes de verse (solo con JavaScript): líneas sin dibujar, ladrillos arriba y el ave fuera */
 .isotipo.espera .trazo:not(.punteado) { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .isotipo.espera .punteado, .isotipo.espera .acento { opacity: 0; }

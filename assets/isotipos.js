@@ -18,23 +18,23 @@
 
     function poner(px, py, giro, alaGrados, escY) {
       ave.setAttribute('transform', 'translate(' + px.toFixed(2) + ' ' + py.toFixed(2) + ') rotate(' + giro.toFixed(2) + ') scale(' + s + ' ' + (s * escY).toFixed(4) + ')');
-      ala.setAttribute('transform', 'rotate(' + (-Math.abs(alaGrados)).toFixed(2) + ' ' + pivote[0] + ' ' + pivote[1] + ')');
+      ala.setAttribute('transform', 'rotate(' + Math.abs(alaGrados).toFixed(2) + ' ' + pivote[0] + ' ' + pivote[1] + ')');
     }
     function parpadear() {
       if (!ojo.animate) return;
       ojo.animate([{ transform: 'scaleY(1)' }, { transform: 'scaleY(.1)' }, { transform: 'scaleY(1)' }], { duration: 220, easing: 'ease-in-out' });
     }
 
-    /* Vuelo: llega desde arriba a la derecha en una curva, batiendo el ala, y se posa con un pequeño rebote */
+    /* Vuelo: llega desde arriba a la izquierda en una curva, batiendo el ala, y se posa con un pequeño rebote */
     function volar() {
       ocupado = true;
-      var x0 = x + 230, y0 = y - 120, cx = x + 70, cy = y - 150, dur = 1500, t0 = performance.now();
+      var x0 = x - 230, y0 = y - 120, cx = x - 70, cy = y - 150, dur = 1500, t0 = performance.now();
       ave.style.visibility = 'visible';
       (function cuadro(ahora) {
         var e = Math.min(1, (ahora - t0) / dur), p = suave(e), q = 1 - p;
         var px = q * q * x0 + 2 * q * p * cx + p * p * x, py = q * q * y0 + 2 * q * p * cy + p * p * y;
         var batida = Math.sin((ahora - t0) / 1000 * Math.PI * 2 * 5.5) * 24 * (1 - e * e);
-        poner(px, py, -14 * q, batida, 1);
+        poner(px, py, 14 * q, batida, 1);
         if (e < 1) requestAnimationFrame(cuadro); else posarse();
       })(t0);
     }

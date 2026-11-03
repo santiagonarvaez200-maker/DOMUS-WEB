@@ -4,8 +4,8 @@
 window.DOMUS_CONFIG = {
   whatsapp: "573212933418",
   telefono: "+57 321 293 3418",
-  correo: "domusofficial@gmail.com",
-  instagram: "domuscyr",
+  correo: "domusofficial65@gmail.com",
+  instagram: "domusofficial65",
   direccion: "Carrera 81H # 54C - 49 Sur, Villas de Zarzamora, Kennedy, Bogotá D.C.",
   horario: "Lunes a viernes, de 8:00 a. m. a 7:00 p. m.",
   mapa: "https://www.google.com/maps/search/?api=1&query=4.619167%2C-74.178889", /* punto exacto del taller: 4°37'09.0"N 74°10'44.0"W */
